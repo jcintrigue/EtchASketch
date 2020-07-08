@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <style>
+        .center{
+            margin: auto;
+            width: 50%;
+        }
+        button{
+            display: block;
+            margin: auto;
+        }
+        #grid-container{
+            display: grid;
+            grid-template-columns: repeat(16,auto);
+            grid-template-rows: repeat(16, auto); 
+            border: 5px solid black;
+            max-width: 75%;
+            margin-left: 25%;
+            margin-right: 25%;
+            
+        }
+
+        
+    </style>
+    <body>
+        <div class="center">
+        <button id = "btn">New Grid!</button>
+        </div>
+        <div id = "grid-container">
+        
+        </div>
+        <div class="center">
+            <button id = "colorbtn">Random Colors!</button>
+            <button id = "shadebtn">Shading!</button>
+        </div>
+        <script>
+            let wantColor = false;
+            let wantShading = true;
+            const grid = document.querySelector("#grid-container");
+            
+            function makeGrid(gridsize){
+                pixelSize = 960/gridsize;
+                layoutPercentage = (1/gridsize)*100;
+
+                grid.setAttribute("style", 
+                `grid-template-columns: repeat(${gridsize}, ${layoutPercentage}%); grid-template-rows: repeat(${gridsize}, ${layoutPercentage}%)`);
+
+                for(num = 1; num <= (gridsize*gridsize); num++){
+                const item = document.createElement('div');
+                item.className = "grid-item";
+                item.id = `grid-item-${num}`;
+                item.setAttribute("style", `min-width: ${600/gridsize}px; min-height: ${600/gridsize}px; background-color: rgb(255,255,255);`);
+                grid.appendChild(item);
+                }
+                function randomColor(){
+                    let randomBetween = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+                    let r = randomBetween(0, 255);
+                    let g = randomBetween(0, 255);
+                    let b = randomBetween(0, 255);
+                    let rgb = `rgb(${r},${g},${b})`;
+                    return rgb;
+                }
+
+                function shading(e){
+
+                let red = 0;
+                let green = 0;
+                let blue = 0;
+                let opacity = 0.1;
+
+                if (!e.target.style.opacity) {
+                     opacity = 0.1;
+                } else if (+e.target.style.opacity === 1) {
+                    opacity = 1;
+                } else {
+                let divOpacity = e.target.style.opacity;
+                divOpacity = +divOpacity + 0.1;
+                opacity = divOpacity;
+                }
+                e.target.style.backgroundColor = `rgb(${red},${green},${blue})`;
+                e.target.style.opacity = opacity;
+                e.target.style.outline = `rgba(${red},${green},${blue},${opacity})`;
+                }
+
+
+                const items = document.querySelectorAll(".grid-item")
+                items.forEach((item) => {
+                
+                item.addEventListener('mouseover', (e) => {
+                    console.log(`hovering over ${item.textContent}`);
+                    if (wantColor == true){
+                        item.style.backgroundColor = `${randomColor()}`;
+                    }
+                    else if (wantShading == true)
+                    {
+                        shading(e);
+                    }
+                })
+            })
+            }
+
+            if (grid.childElementCount == 0){
+            makeGrid(16);
+            }
+            
+            
+
+            function newGrid(){
+                cleanGrid();
+                let size = prompt("What size grid?");
+                makeGrid(size);
+            }
+
+            function cleanGrid(){
+                const items = document.querySelectorAll(".grid-item")
+                items.forEach((box) => {
+                    grid.removeChild(box);
+                })
+                wantColor = false;
+                wantShading = true;
+
+            }
+            const btn = document.querySelector("#btn");
+            btn.addEventListener('click',() => {
+                newGrid();
+            });
+            const colorbtn = document.querySelector("#colorbtn");
+            colorbtn.addEventListener('click', () => {
+                tempsize = Math.sqrt(grid.childElementCount);
+                cleanGrid();
+                makeGrid(tempsize);
+                wantColor = true;
+                
+            })
+            const shadebtn = document.querySelector("#shadebtn");
+            shadebtn.addEventListener('click', () => {
+                tempsize = Math.sqrt(grid.childElementCount);
+                cleanGrid();
+                makeGrid(tempsize);
+                wantShading = true;
+            })
+        </script>
+    </body>
+</html>
